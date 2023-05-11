@@ -1,26 +1,35 @@
-#include <ncurses.h>
+#include <iostream>
+#include <Windows.h>
 
-int main() {
-    // Initialize NCurses
-    initscr();
+int main()
+{
+    // Set console window size and buffer
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    COORD coord;
+    coord.X = 80;
+    coord.Y = 25;
+    SMALL_RECT Rect;
+    Rect.Top = 0;
+    Rect.Left = 0;
+    Rect.Bottom = coord.Y - 1;
+    Rect.Right = coord.X - 1;
+    SetConsoleScreenBufferSize(hConsole, coord);
+    SetConsoleWindowInfo(hConsole, TRUE, &Rect);
 
-    // Create a window
-    WINDOW* win = newwin(10, 40, 5, 10);
+    // Hide console cursor
+    CONSOLE_CURSOR_INFO cursorInfo;
+    GetConsoleCursorInfo(hConsole, &cursorInfo);
+    cursorInfo.bVisible = false;
+    SetConsoleCursorInfo(hConsole, &cursorInfo);
 
-    // Draw a box around the window
-    box(win, 0, 0);
+    // Set console text color and background color
+    SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED);
 
-    // Print a message in the window
-    mvwprintw(win, 2, 2, "Hello World!");
+    // Print message on the console
+    std::cout << "Hello World!" << std::endl;
 
-    // Refresh the window
-    wrefresh(win);
-
-    // Wait for a key press
-    getch();
-
-    // End NCurses mode
-    endwin();
+    // Wait for user input
+    std::cin.get();
 
     return 0;
 }
